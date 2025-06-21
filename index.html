@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blueprints & Co. - Crafting Digital Narratives</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Adding Three.js and GSAP for advanced animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Roboto+Mono:wght@500&family=Orbitron:wght@700&family=Sacramento&family=Cinzel:wght@700&family=Poppins:wght@500;700&family=Cormorant+Garamond:wght@600&family=Raleway:wght@600&family=Bebas+Neue&family=Montserrat:wght@700&family=Lora:ital@1&family=Nunito:wght@700&family=Oswald:wght@500&family=Source+Code+Pro:wght@500&family=Merriweather:wght@700&family=Exo+2:wght@700&family=Teko:wght@600&family=Pacifico&family=Josefin+Sans:wght@600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: #0a0a0a;
+            color: #e5e5e5;
+            overflow-x: hidden;
+        }
+        h1, h2, h3, h4 { font-family: 'DM Sans', sans-serif; font-weight: 700; }
+        p { font-weight: 400; font-size: 1rem; line-height: 1.7; }
+        
+        #hero { position: relative; overflow: hidden; }
+        #hero-video {
+            position: absolute; top: 50%; left: 50%;
+            min-width: 100%; min-height: 100%;
+            width: auto; height: auto;
+            z-index: 0;
+            transform: translateX(-50%) translateY(-50%);
+            opacity: 0.15;
+        }
+        .hero-content { position: relative; z-index: 1; }
+
+        .reveal { opacity: 0; transform: translateY(40px); transition: opacity 1s ease-out, transform 1s ease-out; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        /* --- NEW: Scrollytelling Section Styling --- */
+        .scrolly-container {
+            position: relative;
+        }
+        .scrolly-sticky-animation {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+        #scrolly-canvas { width: 100%; height: 100%; }
+        .scrolly-text-content {
+            position: relative;
+            z-index: 10;
+        }
+        .scrolly-step {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 0 5%;
+        }
+        .scrolly-step .step-inner {
+            max-width: 500px;
+            background: rgba(10, 10, 10, 0.5);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 2rem;
+            border-radius: 1rem;
+        }
+
+        /* --- Global Scale Section Styling (Modified) --- */
+        .global-scale-container {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        #global-video {
+            position: absolute; top: 50%; left: 50%;
+            min-width: 100%; min-height: 100%;
+            width: auto; height: auto;
+            z-index: 0;
+            transform: translateX(-50%) translateY(-50%);
+            opacity: 0.9;
+        }
+        .global-content {
+            position: relative; z-index: 1;
+            text-align: center; max-width: 48rem;
+            text-shadow: 0px 2px 10px rgba(0, 0, 0, 0.7);
+        }
+
+        .brand-item {
+            transition: transform 0.3s cubic-bezier(0.215, 0.610, 0.355, 1.000);
+        }
+    </style>
+</head>
+<body class="text-gray-200">
+
+    <main>
+        <!-- Hero Section -->
+        <section id="hero" class="min-h-screen flex items-center justify-center text-center px-6">
+            <video playsinline autoplay muted loop id="hero-video">
+                <source src="website-video.mp4" type="video/mp4">
+            </video>
+            <div class="hero-content reveal">
+                <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">Where Ideas Take Form</h1>
+                <p class="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-gray-300">75% of ventures never reach their peak because they lack the right creative partner. We don't just market; we design, build, and launch the digital blueprint of your brand's future.</p>
+                <div class="mt-10">
+                    <a href="#journey" class="border border-gray-500 hover:bg-white/10 text-gray-200 font-semibold py-3 px-8 rounded-full text-base transition duration-300">Explore the Process</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- REDESIGNED SCROLLYTELLING SECTION -->
+        <section id="journey" class="py-12 bg-black scrolly-container">
+            <div class="text-center py-16">
+                 <h2 class="text-3xl md:text-5xl font-bold text-white reveal">The Blueprint Unfolded</h2>
+                 <p class="mt-6 text-gray-400 max-w-3xl mx-auto reveal">Our process is a meticulous framework for building your digital presence. As you scroll, witness the transformation from a mere concept into a thriving digital ecosystem.</p>
+            </div>
+            
+            <div class="scrolly-sticky-animation">
+                <canvas id="scrolly-canvas"></canvas>
+            </div>
+            
+            <div class="scrolly-text-content">
+                <div class="scrolly-step" data-step="1">
+                    <div class="step-inner">
+                        <h4 class="text-lg font-bold text-blue-400 mb-2">01. The Spark</h4>
+                        <h3 class="text-2xl md:text-3xl text-white mb-4">Foundational Strategy</h3>
+                        <p class="text-gray-400">Every project begins as scattered potential. We analyze the landscape and define the core architecture of your brand's digital identity, gathering the data points that will become your foundation.</p>
+                    </div>
+                </div>
+                <div class="scrolly-step" data-step="2">
+                     <div class="step-inner">
+                        <h4 class="text-lg font-bold text-blue-400 mb-2">02. The Schematic</h4>
+                        <h3 class="text-2xl md:text-3xl text-white mb-4">Creative Development</h3>
+                        <p class="text-gray-400">The points connect. Your story is articulated through compelling visuals and authoritative narratives. We design the wireframe for your success, ensuring every element has purpose.</p>
+                    </div>
+                </div>
+                <div class="scrolly-step" data-step="3">
+                     <div class="step-inner">
+                        <h4 class="text-lg font-bold text-blue-400 mb-2">03. The Assembly</h4>
+                        <h3 class="text-2xl md:text-3xl text-white mb-4">Digital Construction</h3>
+                        <p class="text-gray-400">The blueprint becomes reality. We build your platforms—websites, social channels, and campaigns—with precision engineering for performance, engagement, and a tangible presence.</p>
+                    </div>
+                </div>
+                <div class="scrolly-step" data-step="4">
+                     <div class="step-inner">
+                        <h4 class="text-lg font-bold text-blue-400 mb-2">04. The Network</h4>
+                        <h3 class="text-2xl md:text-3xl text-white mb-4">Growth & Amplification</h3>
+                        <p class="text-gray-400">Your structure becomes an ecosystem. Targeted campaigns and organic strategies create a thriving network, driving awareness and converting interest into a loyal community.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GLOBAL SCALE SECTION - MODIFIED -->
+        <section id="services" class="bg-black global-scale-container">
+            <video playsinline autoplay muted loop id="global-video">
+                <source src="anatomy-of-a-blueprint.mp4" type="video/mp4">
+            </video>
+            <div class="global-content container mx-auto px-6">
+                <h2 class="text-4xl md:text-6xl font-bold text-white mb-6 reveal">Anatomy of a Blueprint</h2>
+                <p class="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto reveal">All growth is by design. We engineer every facet of your digital presence, from foundational code to global campaigns, creating a cohesive, powerful, and scalable ecosystem for your brand.</p>
+            </div>
+        </section>
+        
+        <!-- Quote Generator Section -->
+        <section id="results" class="py-24 bg-[#111111]">
+            <div class="container mx-auto px-6 flex flex-col items-center">
+                 <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-5xl font-bold text-white reveal">A Spark of Insight</h2>
+                    <p class="mt-6 text-gray-400 max-w-2xl mx-auto reveal">Wisdom for the way forward.</p>
+                </div>
+                <figure class="reveal w-full max-w-4xl text-center">
+                    <blockquote id="quote-text" class="text-xl md:text-2xl text-gray-200 font-light transition-opacity duration-500" style="font-family: 'Playfair Display', serif; font-style: italic;">Loading quote...</blockquote>
+                    <figcaption id="quote-author" class="mt-6 text-base text-gray-500 not-italic transition-opacity duration-500"></figcaption>
+                </figure>
+                <button id="reload-quote-btn" class="mt-12 flex items-center gap-2 border border-gray-700 hover:border-gray-500 text-gray-400 hover:text-white font-semibold py-2 px-5 rounded-full text-sm transition duration-300 reveal">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>
+                    New Insight
+                </button>
+            </div>
+        </section>
+
+        <!-- Client Wall Section -->
+        <section id="clients" class="py-24 bg-white text-gray-900">
+            <div class="container mx-auto px-6 text-center">
+                 <h2 class="text-3xl md:text-5xl font-bold reveal">Trusted by Innovators</h2>
+                 <p class="mt-6 text-gray-600 max-w-2xl mx-auto reveal">We are proud to be the chosen creative partners for leaders across industries.</p>
+                 <div class="mt-20 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-8 gap-y-16 items-center">
+                    <!-- CORRECTED PARTNER LOGOS USING STYLED TEXT -->
+                    <div class="reveal brand-item flex justify-center items-center h-16">
+                        <p class="text-3xl font-bold" style="color: #63428c;">DE</p>
+                    </div>
+                    <div class="reveal brand-item flex justify-center items-center h-16">
+                         <p class="text-2xl font-bold tracking-widest" style="color: #000; font-family: 'Montserrat', sans-serif;">ELNALINE</p>
+                    </div>
+                    <div class="reveal brand-item flex justify-center items-center h-16">
+                         <p class="text-4xl" style="color: #6d9773; font-family: 'Playfair Display', serif;">Sotea</p>
+                    </div>
+                    <div class="reveal brand-item flex justify-center items-center h-16">
+                         <p class="text-3xl font-bold" style="color: #216a36;">loca-lime</p>
+                    </div>
+                    <!-- REMAINING MOCK BRANDS -->
+                    <div class="reveal brand-item text-2xl" style="font-family: 'Cormorant Garamond', serif;">Hearth & Vine</div>
+                    <div class="reveal brand-item text-3xl" style="font-family: 'Bebas Neue', cursive;">TERRAFORM</div>
+                    <div class="reveal brand-item text-2xl" style="font-family: 'Raleway', sans-serif;">Apex Labs</div>
+                    <div class="reveal brand-item text-xl" style="font-family: 'Montserrat', sans-serif;">VERVE</div>
+                    <div class="reveal brand-item text-2xl" style="font-family: 'Lora', serif; font-style: italic;">Quill & Ink</div>
+                    <div class="reveal brand-item text-xl" style="font-family: 'Nunito', sans-serif;">Sunstone</div>
+                    <div class="reveal brand-item text-2xl" style="font-family: 'Oswald', sans-serif;">ZENITH</div>
+                    <div class="reveal brand-item text-xl" style="font-family: 'Source Code Pro', monospace;">[Cortex]</div>
+                    <div class="reveal brand-item text-2xl" style="font-family: 'Merriweather', serif;">The Guild</div>
+                    <div class="reveal brand-item text-2xl" style="font-family: 'Exo 2', sans-serif;">Helios</div>
+                    <div class="reveal brand-item text-3xl" style="font-family: 'Teko', sans-serif;">STRATUS</div>
+                    <div class="reveal brand-item text-4xl" style="font-family: 'Pacifico', cursive;">Bloom</div>
+                    <div class="reveal brand-item text-2xl" style="font-family: 'Playfair Display', serif;">Atelier Noir</div>
+                    <div class="reveal brand-item text-xl" style="font-family: 'Josefin Sans', sans-serif;">Solstice</div>
+                    <div class="reveal brand-item text-2xl" style="font-family: 'Roboto Mono', monospace;">Binary</div>
+                    <div class="reveal brand-item text-2xl" style="font-family: 'Poppins', sans-serif; font-weight: 500;">Echo</div>
+                 </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section id="contact" class="py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="bg-gray-900 text-white rounded-2xl p-10 md:p-16 text-center relative overflow-hidden reveal">
+                     <div class="relative z-10">
+                        <h2 class="text-3xl md:text-5xl font-bold">Let's Build Your Blueprint.</h2>
+                        <p class="mt-6 text-gray-300 max-w-2xl mx-auto">The future is unwritten. Let's design it together.</p>
+                        <div class="mt-10">
+                            <a href="#" class="bg-white text-black font-bold py-3 px-8 rounded-full text-base transition duration-300 transform hover:scale-105 inline-block">Start the Conversation</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            // --- General Scroll-triggered animations ---
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) entry.target.classList.add('visible');
+                });
+            }, { threshold: 0.15 });
+            document.querySelectorAll('.reveal:not(.brand-item)').forEach(el => revealObserver.observe(el));
+
+            // --- Quote Generator ---
+            const quoteTextEl = document.getElementById('quote-text');
+            const quoteAuthorEl = document.getElementById('quote-author');
+            const reloadBtn = document.getElementById('reload-quote-btn');
+            if (reloadBtn) {
+                const quotes = [ { quote: "Creativity is intelligence having fun.", author: "Albert Einstein" }, { quote: "The best way to predict the future is to create it.", author: "Peter Drucker" }, { quote: "Design is not just what it looks like and feels like. Design is how it works.", author: "Steve Jobs" }, { quote: "Simplicity is the ultimate sophistication.", author: "Leonardo da Vinci" }, { quote: "Good design is good business.", author: "Thomas Watson Jr." }, { quote: "The essence of strategy is choosing what not to do.", author: "Michael Porter" }, { quote: "Marketing is no longer about the stuff that you make, but about the stories you tell.", author: "Seth Godin" } ];
+                let currentQuoteIndex = -1;
+                function displayRandomQuote() {
+                    quoteTextEl.style.opacity = 0; quoteAuthorEl.style.opacity = 0;
+                    setTimeout(() => {
+                        let newIndex;
+                        do { newIndex = Math.floor(Math.random() * quotes.length); } while (newIndex === currentQuoteIndex);
+                        currentQuoteIndex = newIndex;
+                        quoteTextEl.textContent = `“${quotes[currentQuoteIndex].quote}”`;
+                        quoteAuthorEl.textContent = `— ${quotes[currentQuoteIndex].author}`;
+                        quoteTextEl.style.opacity = 1; quoteAuthorEl.style.opacity = 1;
+                    }, 500);
+                }
+                displayRandomQuote();
+                reloadBtn.addEventListener('click', displayRandomQuote);
+            }
+
+            // --- Scrollytelling Animation using GSAP and Three.js ---
+            const scrollyCanvas = document.getElementById('scrolly-canvas');
+            if (scrollyCanvas) {
+                gsap.registerPlugin(ScrollTrigger);
+                
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(75, scrollyCanvas.clientWidth / scrollyCanvas.clientHeight, 0.1, 1000);
+                const renderer = new THREE.WebGLRenderer({ canvas: scrollyCanvas, alpha: true });
+                
+                function resizeScrolly() {
+                    const { clientWidth, clientHeight } = scrollyCanvas.parentElement;
+                    renderer.setSize(clientWidth, clientHeight);
+                    camera.aspect = clientWidth / clientHeight;
+                    camera.updateProjectionMatrix();
+                }
+                resizeScrolly();
+
+                scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+                const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+                dirLight.position.set(5, 5, 5);
+                scene.add(dirLight);
+                camera.position.z = 10;
+                
+                // --- Create all 3D objects for the animation states ---
+                const pointsMaterial = new THREE.PointsMaterial({ color: 0x475569, size: 0.1, transparent: true });
+                const pointsGeometry = new THREE.SphereGeometry(4, 32, 32);
+                const step1_points = new THREE.Points(pointsGeometry, pointsMaterial);
+                scene.add(step1_points);
+
+                const wireframeMaterial = new THREE.LineBasicMaterial({ color: 0x60a5fa, transparent: true, opacity: 0 });
+                const wireframeGeo = new THREE.WireframeGeometry(new THREE.IcosahedronGeometry(4, 1));
+                const step2_wireframe = new THREE.LineSegments(wireframeGeo, wireframeMaterial);
+                step2_wireframe.scale.set(0, 0, 0);
+                scene.add(step2_wireframe);
+                
+                const solidMaterial = new THREE.MeshStandardMaterial({ color: 0x93c5fd, roughness: 0.3, metalness: 0.5, transparent: true, opacity: 0 });
+                const step3_solid = new THREE.Mesh(new THREE.TorusKnotGeometry(2.5, 0.8, 100, 16), solidMaterial);
+                step3_solid.scale.set(0,0,0);
+                scene.add(step3_solid);
+
+                const communityGroup = new THREE.Group();
+                const mainSphere = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 32), new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0x60a5fa, emissiveIntensity: 1, transparent: true, opacity: 0 }));
+                communityGroup.add(mainSphere);
+                for(let i = 0; i < 8; i++) {
+                    const s = new THREE.Mesh(new THREE.SphereGeometry(0.3, 16, 16), new THREE.MeshStandardMaterial({ color: 0x9ca3af, transparent: true, opacity: 0 }));
+                    const angle = (i/8) * Math.PI * 2;
+                    s.position.set(Math.cos(angle) * 4, Math.sin(angle) * 4, (Math.random() - 0.5) * 2);
+                    communityGroup.add(s);
+                }
+                scene.add(communityGroup);
+
+                // --- GSAP Timeline ---
+                const tl = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: ".scrolly-container",
+                        start: "top top",
+                        end: "bottom bottom",
+                        scrub: 1.5,
+                    }
+                });
+
+                // Step 1 -> 2: Points coalesce into wireframe
+                tl.to(step1_points.material, { opacity: 0 }, 0);
+                tl.to(step2_wireframe.scale, { x: 1, y: 1, z: 1 }, 0);
+                tl.to(step2_wireframe.material, { opacity: 0.8 }, 0);
+                tl.to(step2_wireframe.rotation, { y: Math.PI * 2 }, 1);
+                
+                // Step 2 -> 3: Wireframe becomes solid
+                tl.to(step2_wireframe.material, { opacity: 0 }, 1);
+                tl.to(step3_solid.scale, { x: 1, y: 1, z: 1 }, 1);
+                tl.to(step3_solid.material, { opacity: 1 }, 1);
+                tl.to(step3_solid.rotation, { x: Math.PI, y: Math.PI }, 2);
+
+                // Step 3 -> 4: Solid becomes community
+                tl.to(step3_solid.material, { opacity: 0 }, 2);
+                tl.to(step3_solid.scale, { x: 0, y: 0, z: 0 }, 2);
+                tl.to(mainSphere.material, { opacity: 1 }, 2);
+                communityGroup.children.forEach((child, i) => {
+                    if(i > 0) tl.to(child.material, { opacity: 1 }, 2 + (i * 0.05));
+                });
+                tl.to(communityGroup.rotation, { y: -Math.PI }, 3);
+
+                function animateScrolly() {
+                    requestAnimationFrame(animateScrolly);
+                    renderer.render(scene, camera);
+                }
+                animateScrolly();
+                
+                window.addEventListener('resize', resizeScrolly);
+            }
+        });
+    </script>
+</body>
+</html>
